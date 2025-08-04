@@ -6,6 +6,15 @@ A fully functional, responsive, and visually appealing frontend for a Gemini-sty
 
 [Deploy to Vercel](https://vercel.com) or [Deploy to Netlify](https://netlify.com)
 
+### Quick Deploy
+```bash
+# Clone and deploy
+git clone <your-repo-url>
+cd gemini-chat-app
+npm install
+npm run build
+```
+
 ## ✨ Features
 
 ### 🔐 Authentication
