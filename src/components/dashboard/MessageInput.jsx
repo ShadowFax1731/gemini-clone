@@ -1,37 +1,42 @@
-import { useState, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { sendMessage } from '../../store/slices/chatSlice';
-import { Send, Image, X } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { useState, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { sendMessage } from "../../store/slices/chatSlice";
+import { Send, Image, X } from "lucide-react";
+import toast from "react-hot-toast";
 
 const MessageInput = ({ chatroomId }) => {
   const dispatch = useDispatch();
   const { isLoading } = useSelector((state) => state.chat);
-  
-  const [message, setMessage] = useState('');
+
+  const [message, setMessage] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef(null);
 
+  const messageInputRef = useRef(null);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!message.trim() && !imagePreview) {
       return;
     }
 
     try {
-      await dispatch(sendMessage({ 
-        chatroomId, 
-        message: message.trim() || 'Shared an image',
-        imageUrl: imagePreview 
-      })).unwrap();
-      
-      setMessage('');
+      await dispatch(
+        sendMessage({
+          chatroomId,
+          message: message.trim() || "Shared an image",
+          imageUrl: imagePreview,
+        }),
+      ).unwrap();
+
+      setMessage("");
       setImagePreview(null);
-      toast.success('Message sent!');
+      toast.success("Message sent!");
+      messageInputRef.current?.focus();
     } catch (error) {
-      toast.error('Failed to send message');
+      toast.error("Failed to send message");
     }
   };
 
@@ -40,26 +45,26 @@ const MessageInput = ({ chatroomId }) => {
     if (!file) return;
 
     // Validate file type
-    if (!file.type.startsWith('image/')) {
-      toast.error('Please select an image file');
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
       return;
     }
 
     // Validate file size (5MB limit)
     if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image size must be less than 5MB');
+      toast.error("Image size must be less than 5MB");
       return;
     }
 
     setIsUploading(true);
-    
+
     const reader = new FileReader();
     reader.onload = (e) => {
       setImagePreview(e.target.result);
       setIsUploading(false);
     };
     reader.onerror = () => {
-      toast.error('Failed to load image');
+      toast.error("Failed to load image");
       setIsUploading(false);
     };
     reader.readAsDataURL(file);
@@ -68,12 +73,12 @@ const MessageInput = ({ chatroomId }) => {
   const removeImage = () => {
     setImagePreview(null);
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSubmit(e);
     }
@@ -134,8 +139,9 @@ const MessageInput = ({ chatroomId }) => {
             placeholder="Type your message..."
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
             rows="1"
-            style={{ minHeight: '40px', maxHeight: '120px' }}
+            style={{ minHeight: "40px", maxHeight: "120px" }}
             disabled={isLoading}
+            ref={messageInputRef}
           />
         </div>
 
@@ -152,4 +158,4 @@ const MessageInput = ({ chatroomId }) => {
   );
 };
 
-export default MessageInput; 
+export default MessageInput;
